@@ -2,7 +2,8 @@
 using namespace std;
 
 // definicao de tipo
-struct NO {
+struct NO
+{
 	int valor;
 	NO* prox;
 };
@@ -17,7 +18,7 @@ void exibirElementos();
 void inserirElemento();
 void excluirElemento();
 void buscarElemento();
-NO* posicaoElemento(int numero);
+int posicaoElemento(int numero);
 //--------------------------
 
 
@@ -29,9 +30,10 @@ int main()
 void menu()
 {
 	int op = 0;
-	while (op != 7) {
+	while (op != 7)
+	{
 		system("cls"); // somente no windows
-		cout << "Menu Lista Ligada";
+		cout << "Menu Lista Ligada Ordenada";
 		cout << endl << endl;
 		cout << "1 - Inicializar Lista \n";
 		cout << "2 - Exibir quantidade de elementos \n";
@@ -63,49 +65,47 @@ void menu()
 		default:
 			break;
 		}
-
 		system("pause"); // somente no windows
 	}
 }
 
 void inicializar()
 {
-	// se a lista já possuir elementos
-// libera a memoria ocupada
 	NO* aux = primeiro;
-	while (aux != NULL) {
+	while (aux != NULL)
+	{
 		NO* paraExcluir = aux;
 		aux = aux->prox;
 		free(paraExcluir);
 	}
-
 	primeiro = NULL;
 	cout << "Lista inicializada \n";
-
 }
 
-void exibirQuantidadeElementos() {
-
+void exibirQuantidadeElementos()
+{
 	int nElementos = 0;
 	NO* aux = primeiro;
-	while (aux != NULL) {
+	while (aux != NULL)
+	{
 		nElementos++;
 		aux = aux->prox;
 	}
 	cout << "Quantidade de elementos: " << nElementos << endl;
-
 }
 
 void exibirElementos()
 {
-	if (primeiro == NULL) {
+	if (primeiro == NULL)
+	{
 		cout << "Lista vazia \n";
 		return;
 	}
 	else {
 		cout << "Elementos: \n";
 		NO* aux = primeiro;
-		while (aux != NULL) {
+		while (aux != NULL)
+		{
 			cout << aux->valor << endl;
 			aux = aux->prox;
 		}
@@ -121,33 +121,147 @@ void inserirElemento()
 		return;
 	}
 
+	NO* atual = primeiro;
+	NO* anterior = NULL;
+
 	cout << "Digite o elemento: ";
 	cin >> novo->valor;
 	novo->prox = NULL;
 
+	int Procura = posicaoElemento(novo->valor);
+	if (Procura != NULL)
+	{
+		cout << "O elemento ja existe" << endl;
+		free(novo);
+		return;
+	};
+
 	if (primeiro == NULL)
 	{
 		primeiro = novo;
+		cout << "O elemento foi adicionado na primeira posicao" << endl;
 	}
 	else
 	{
-		// procura o final da lista
-		NO* aux = primeiro;
-		while (aux->prox != NULL) {
-			aux = aux->prox;
+		while (atual != NULL)
+		{
+			if (primeiro->valor > novo->valor)
+			{
+				primeiro = novo;
+				primeiro->prox = atual;
+				cout << "O elemento foi adicionado na primeira posicao" << endl;
+				return;
+			}
+
+			else if (atual->valor > novo->valor)
+			{
+				anterior->prox = novo;
+				novo->prox = atual;
+				int pos = posicaoElemento(novo->valor); 
+				cout << "O elemento foi adicionado na posicao: " << pos << endl;
+				return;
+			}
+
+			else if (atual->prox == NULL)
+			{
+				atual->prox = novo;
+				cout << "O elemento foi adicionado no final." << endl;
+				return;
+			}
+
+			anterior = atual;
+			atual = atual->prox;
 		}
-		aux->prox = novo;
 	}
 }
 
 void excluirElemento()
 {
 
+	if (primeiro == NULL)
+	{
+		cout << "Lista vazia" << endl;
+		return;
+	}
+
+	int nExcluir;
+	cout << "Digite o elemento a ser deletado: " << endl;
+	cin >> nExcluir;
+	int Procura = posicaoElemento(nExcluir);
+
+	if (Procura == NULL)
+	{
+		cout << "Elemento nao existe" << endl;
+		return;
+	}
+
+	NO* atual = primeiro;
+	NO* anterior = NULL;
+
+	while (atual != NULL)
+	{
+		if (atual->valor == nExcluir)
+		{
+			if (nExcluir == primeiro->valor)
+			{
+				primeiro = atual->prox;
+			}
+			else
+			{
+				anterior->prox = atual->prox;
+			}
+			free(atual);
+			cout << "O elemento foi deletado com sucesso!" << endl;
+			break;
+		}
+		anterior = atual;
+		atual = atual->prox;
+	}
 }
 
 void buscarElemento()
 {
+	if (primeiro == NULL)
+	{
+		cout << "Lista vazia" << endl;
+		return;
+	}
 
+	NO* aux = primeiro;
+	int busca;
+
+	cout << "Digite o elemento a ser encontrado: " << endl;
+	cin >> busca;
+	int pos = posicaoElemento(busca);
+
+	if (pos == NULL)
+	{
+		cout << "Elemento nao encontrado" << endl;
+		return;
+	}
+	else
+	{
+		cout << "Elemento encontrado na posicao " << pos << endl;
+	}
 }
 
+int posicaoElemento(int numero)
+{
+	NO* aux = primeiro;
+	int posicao = 1; 
 
+	while (aux != NULL)
+	{
+		if (aux->valor == numero) 
+		{
+			return posicao;
+		}
+		else if (aux->valor > numero) 
+		{
+			return NULL;
+		}
+		posicao++;
+		aux = aux->prox;
+	}
+	return NULL;
+}
